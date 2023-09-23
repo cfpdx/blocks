@@ -18,12 +18,7 @@ module "vpc" {
   private_subnets     = [for k, v in local.azs : cidrsubnet(var.vpc_cidr, 8, k)]
   public_subnets      = [for k, v in local.azs : cidrsubnet(var.vpc_cidr, 8, k + 4)]
   database_subnets    = [for k, v in local.azs : cidrsubnet(var.vpc_cidr, 8, k + 8)]
-  elasticache_subnets = [for k, v in local.azs : cidrsubnet(var.vpc_cidr, 8, k + 12)]
-
-  private_subnet_names = [var.private_subnet_1, var.private_subnet_2]
-  public_subnet_names = [var.public_subnet_1, var.public_subnet_2]
-  database_subnet_names    = [var.data_subnet_1]
-  elasticache_subnet_names = [var.cache_subnet_1]
+  elasticache_subnets = [for k, v in local.azs : cidrsubnet(var.vpc_cidr, 8, k + 12)] 
 
   create_igw = true
 
