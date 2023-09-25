@@ -1,9 +1,8 @@
 ## ACCOUNT
-default_region="us-east-1"
-default_tags = {
-    env = "prod"
-    managed_by = "terraform"
-}
+default_region = "us-east-1"
+
+## DNS
+registered_dns_name = "codefriendspdx.com"
 
 ## VPC
 vpc_name = "blocks-vpc"
