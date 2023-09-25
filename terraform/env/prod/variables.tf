@@ -4,8 +4,9 @@ variable "default_region" {
     type = string
 }
 
-variable "default_tags" {
-    description = "The default set of tags to use for most resources"
+## DNS
+variable "registered_dns_name" {
+  description = "The name of the DNS name registered to this project"
 }
 
 ## VPC

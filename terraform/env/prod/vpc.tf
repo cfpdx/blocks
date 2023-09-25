@@ -1,12 +1,12 @@
+##################################################################
+# Networking
+##################################################################
+
 data "aws_availability_zones" "available" {}
 
 locals {
   azs      = slice(data.aws_availability_zones.available.names, 0, 3)
 }
-
-################################################################################
-# VPC Module
-################################################################################
 
 module "vpc" {
   source = "../../modules/vpc"
@@ -36,6 +36,4 @@ module "vpc" {
   create_flow_log_cloudwatch_log_group = true
   create_flow_log_cloudwatch_iam_role  = true
   flow_log_max_aggregation_interval    = 60
-
-  tags = var.default_tags
 }
