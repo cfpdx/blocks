@@ -1,8 +1,8 @@
 terraform {
   backend "s3" {
-    bucket = "blocks-remote-tf-state"
-    key    = "terraform.tfstate"
-    region = "us-east-1"
+    bucket         = "blocks-remote-tf-state"
+    key            = "terraform.tfstate"
+    region         = "us-east-1"
     dynamodb_table = "terraform_state"
   }
 }

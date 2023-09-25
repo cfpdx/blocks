@@ -1,8 +1,8 @@
 ## ACCOUNT
-default_region="us-east-1"
+default_region = "us-east-1"
 default_tags = {
-    env = "prod"
-    managed_by = "terraform"
+  env        = "prod"
+  managed_by = "terraform"
 }
 
 ## VPC
