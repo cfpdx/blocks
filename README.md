@@ -1,6 +1,6 @@
 # Blocks
 
-Blocks is an Infrastructure as Code repository supporting the core application serving goodcodefriends.com
+Blocks is an Infrastructure as Code repository supporting the core application serving codefriendspdx.com
 
 ## Usage
 Depending on which IaC language you wish to use, deployment may vary
