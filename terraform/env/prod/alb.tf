@@ -84,10 +84,21 @@ module "alb" {
     {
       https_listener_index = 0
       priority             = 2
+
       actions = [{
-        type               = "forward"
-        target_group_index = 0
+        type = "weighted-forward"
+        target_groups = [
+          {
+            target_group_index = 0
+            weight             = 1
+          },
+          {
+            target_group_index = 1
+            weight             = 1
+          }
+        ]
       }]
+
       conditions = [{
         path_patterns = ["*"]
       }]
@@ -117,6 +128,32 @@ module "alb" {
       targets = {
         my_ec2 = {
           target_id = aws_instance.web.id
+          port      = 80
+        }
+      }
+    },
+    {
+      name                              = "web2-tg"
+      backend_protocol                  = "HTTP"
+      backend_port                      = 80
+      target_type                       = "instance"
+      deregistration_delay              = 10
+      load_balancing_cross_zone_enabled = false
+      health_check = {
+        enabled             = true
+        interval            = 45
+        path                = "/"
+        port                = "traffic-port"
+        healthy_threshold   = 3
+        unhealthy_threshold = 3
+        timeout             = 30
+        protocol            = "HTTP"
+        matcher             = "200-399"
+      }
+      protocol_version = "HTTP1"
+      targets = {
+        my_ec2 = {
+          target_id = aws_instance.web2.id
           port      = 80
         }
       }
