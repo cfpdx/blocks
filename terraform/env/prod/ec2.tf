@@ -76,6 +76,33 @@ sudo systemctl restart nginx
 EOF
 
   tags = {
-    Name = "Hello World"
+    Name = "Web 1"
+  }
+}
+
+resource "aws_instance" "web2" {
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = "t2.micro"
+  subnet_id                   = data.aws_subnet.primary_public.id
+  vpc_security_group_ids      = [aws_security_group.allow_alb.id]
+  key_name                    = "backdoor_web"
+  associate_public_ip_address = true
+
+  user_data = <<EOF
+#!/bin/bash
+# Update the package manager and install Nginx
+sudo apt update -y
+sudo apt install nginx -y
+sudo systemctl start nginx
+sudo systemctl enable nginx
+# Create an HTML file to display the public IPv4 address
+printf '<html><body><h1>Hello, From ' > /var/www/html/index.html
+curl -s http://169.254.169.254/latest/meta-data/public-ipv4 >> /var/www/html/index.html
+printf '!</h1></body></html>' >> /var/www/html/index.html
+sudo systemctl restart nginx
+EOF
+
+  tags = {
+    Name = "Web 2"
   }
 }
