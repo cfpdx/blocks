@@ -1,5 +1,5 @@
 ##################################################################
-# Application Load Balancer
+# Application Load Balancers
 ##################################################################
 
 locals {
@@ -7,7 +7,7 @@ locals {
 }
 
 module "alb" {
-  source = "../../loadbalancers/application"
+  source = "../../modules/loadbalancers/application"
 
   name = local.alb_name
 
@@ -45,7 +45,6 @@ module "alb" {
   }
 
   http_tcp_listeners = [
-    # Forward action is default, either when defined or undefined
     {
       port               = 80
       protocol           = "HTTP"
@@ -70,19 +69,34 @@ module "alb" {
   https_listener_rules = [
     {
       https_listener_index = 0
-      priority             = 0
+      priority             = 1
       actions = [{
         type         = "fixed-response"
         content_type = "text/plain"
         status_code  = 200
-        message_body = "Fixed endpoint response for ${var.registered_dns_name}"
+        message_body = "ALB Healthy for ${var.registered_domain}"
+      }]
+
+      conditions = [{
+        path_patterns = ["/alb_health"]
+      }]
+    },
+    {
+      https_listener_index = 0
+      priority             = 2
+      actions = [{
+        type               = "forward"
+        target_group_index = 0
+      }]
+      conditions = [{
+        path_patterns = ["*"]
       }]
     }
   ]
 
   target_groups = [
     {
-      name_prefix                       = "tg"
+      name                              = "web-tg"
       backend_protocol                  = "HTTP"
       backend_port                      = 80
       target_type                       = "instance"
@@ -91,7 +105,7 @@ module "alb" {
       health_check = {
         enabled             = true
         interval            = 45
-        path                = "/pulse"
+        path                = "/"
         port                = "traffic-port"
         healthy_threshold   = 3
         unhealthy_threshold = 3
@@ -102,7 +116,7 @@ module "alb" {
       protocol_version = "HTTP1"
       targets = {
         my_ec2 = {
-          target_id = ""
+          target_id = aws_instance.web.id
           port      = 80
         }
       }

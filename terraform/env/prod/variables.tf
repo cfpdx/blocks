@@ -5,7 +5,7 @@ variable "default_region" {
 }
 
 ## DNS
-variable "registered_dns_name" {
+variable "registered_domain" {
   description = "The name of the DNS name registered to this project"
 }
 
@@ -17,5 +17,11 @@ variable "vpc_name" {
 
 variable "vpc_cidr" {
   description = "The CIDR range for the vpc to use"
+  type        = string
+}
+
+## APPLICATION
+variable "application_prefix" {
+  description = "Prefix for individual application. Helps connect specific resources to applications that use them"
   type        = string
 }

@@ -1,7 +1,11 @@
-resource "aws_route53_record" "this" {
-  for_each = var.records
+locals {
+  recordsets = { for rs in var.records : try(rs.key, join(" ", compact(["${rs.name} ${rs.type}", try(rs.set_identifier, "")]))) => rs }
+}
 
-  zone_id = var.zone_id
+resource "aws_route53_record" "this" {
+  for_each = { for k, v in local.recordsets : k => v if var.create && (var.zone_id != null || var.zone_name != null) }
+
+  zone_id                          = var.zone_id
   name                             = each.value.name
   type                             = each.value.type
   ttl                              = lookup(each.value, "ttl", null)

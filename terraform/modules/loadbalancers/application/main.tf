@@ -1,4 +1,5 @@
 # COPIED FROM COMMUNITY MANAGED ALB MODULE https://github.com/terraform-aws-modules/terraform-aws-alb/blob/master/examples/complete-alb/main.tf
+# - SMALL CHANGES MADE TO THE WAY TAGS ARE APPLIED
 
 locals {
   create_lb = var.create_lb
@@ -67,9 +68,7 @@ resource "aws_lb" "this" {
 resource "aws_lb_target_group" "main" {
   count = local.create_lb ? length(var.target_groups) : 0
 
-  name        = lookup(var.target_groups[count.index], "name", null)
-  name_prefix = lookup(var.target_groups[count.index], "name_prefix", null)
-
+  name             = lookup(var.target_groups[count.index], "name", null)
   vpc_id           = var.vpc_id
   port             = try(var.target_groups[count.index].backend_port, null)
   protocol         = try(upper(var.target_groups[count.index].backend_protocol), null)
@@ -118,7 +117,7 @@ resource "aws_lb_target_group" "main" {
     var.target_group_tags,
     lookup(var.target_groups[count.index], "tags", {}),
     {
-      "Name" = try(var.target_groups[count.index].name, var.target_groups[count.index].name_prefix, "")
+      "Name" = lookup(var.target_groups[count.index], "name", null)
     },
   )
 

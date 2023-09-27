@@ -1,11 +1,14 @@
+##################################################################
+# DNS
+##################################################################
+
 data "aws_route53_zone" "primary" {
-  name         = "codefriendspdx.com"
+  name         = var.registered_domain
   private_zone = false
 }
 
-
 module "records" {
-  source = "../../modules/records"
+  source = "../../modules/dns/records"
 
   zone_name = data.aws_route53_zone.primary.name
   zone_id   = data.aws_route53_zone.primary.id
@@ -13,13 +16,11 @@ module "records" {
   records = [
     {
       name = ""
-      type = "CNAME"
-      ttl  = 3600
+      type = "A"
       alias = {
-        name    = module.
-        zone_id = data.aws_route53_zone.id
+        name    = module.alb.lb_dns_name
+        zone_id = "Z35SXDOTRQ7X7K"
       }
-    },
-
+    }
   ]
 }
