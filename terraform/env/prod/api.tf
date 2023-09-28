@@ -46,7 +46,7 @@ module "hello_world" {
 
   function_name = "hello-lamdba"
   description = "Returns a 200 hello world packet"
-  handler       = "index.handler"
+  handler       = "helloworld.handler"
   runtime       = "nodejs16.x"
   filename = "../../modules/lambdas/definitions/helloworld.js.zip"
 }
