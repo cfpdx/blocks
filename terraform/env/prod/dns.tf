@@ -19,7 +19,7 @@ module "records" {
       type = "A"
       alias = {
         name    = module.alb.lb_dns_name
-        zone_id = "Z35SXDOTRQ7X7K"
+        zone_id = module.alb.lb_zone_id
       }
     }
   ]
