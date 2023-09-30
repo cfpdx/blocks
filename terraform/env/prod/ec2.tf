@@ -2,6 +2,24 @@
 # Compute
 ##################################################################
 
+locals {
+  # Obviously not the ideal way of doing this but it works for now
+  maintanence_msg = <<EOF
+#!/bin/bash
+# Update the package manager and install Nginx
+sudo apt update -y
+sudo apt install nginx -y
+sudo systemctl start nginx
+sudo systemctl enable nginx
+printf '<html><body>' > /var/www/html/index.html
+printf '<h1>This site is currently under maintenance</h1>' >> /var/www/html/index.html
+printf '<h2>We apologize for any inconvenience.</h2>' >> /var/www/html/index.html
+printf '<a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/trevor-johnson12/">Contact Administrator</a>' >> /var/www/html/index.html
+printf '</body></html>' >> /var/www/html/index.html
+sudo systemctl restart nginx
+EOF
+}
+
 data "aws_ami" "ubuntu" {
   most_recent = true
 
@@ -53,6 +71,7 @@ resource "aws_security_group" "allow_alb" {
   }
 }
 
+
 resource "aws_instance" "web" {
   ami                         = data.aws_ami.ubuntu.id
   instance_type               = "t2.micro"
@@ -61,19 +80,7 @@ resource "aws_instance" "web" {
   key_name                    = "backdoor_web"
   associate_public_ip_address = true
 
-  user_data = <<EOF
-#!/bin/bash
-# Update the package manager and install Nginx
-sudo apt update -y
-sudo apt install nginx -y
-sudo systemctl start nginx
-sudo systemctl enable nginx
-# Create an HTML file to display the public IPv4 address
-printf '<html><body><h1>Hello, From ' > /var/www/html/index.html
-curl -s http://169.254.169.254/latest/meta-data/public-ipv4 >> /var/www/html/index.html
-printf '!</h1></body></html>' >> /var/www/html/index.html
-sudo systemctl restart nginx
-EOF
+  user_data = local.maintanence_msg
 
   tags = {
     Name = "Web 1"
@@ -87,21 +94,7 @@ resource "aws_instance" "web2" {
   vpc_security_group_ids      = [aws_security_group.allow_alb.id]
   key_name                    = "backdoor_web"
   associate_public_ip_address = true
-
-  user_data = <<EOF
-#!/bin/bash
-# Update the package manager and install Nginx
-sudo apt update -y
-sudo apt install nginx -y
-sudo systemctl start nginx
-sudo systemctl enable nginx
-# Create an HTML file to display the public IPv4 address
-printf '<html><body><h1>Hello, From ' > /var/www/html/index.html
-curl -s http://169.254.169.254/latest/meta-data/public-ipv4 >> /var/www/html/index.html
-printf '!</h1></body></html>' >> /var/www/html/index.html
-sudo systemctl restart nginx
-EOF
-
+  user_data = local.maintanence_msg
   tags = {
     Name = "Web 2"
   }
