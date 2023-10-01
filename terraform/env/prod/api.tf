@@ -48,5 +48,6 @@ module "hello_world" {
   description = "Returns a 200 hello world packet"
   handler       = "helloworld.handler"
   runtime       = "nodejs16.x"
+  api_source_arn = module.api_gateway.apigatewayv2_api_execution_arn
   filename = "../../modules/lambdas/definitions/helloworld.js.zip"
 }

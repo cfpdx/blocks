@@ -22,3 +22,8 @@ variable "runtime" {
   description = "The environment to run the lambda code"
   type = string
 }
+
+variable "api_source_arn" {
+  description = "The source ARN of the API Gateway invoking the lambda"
+  type = string
+}
