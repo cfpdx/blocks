@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create S3 Buckets for Contributor portfolio information
+
+Parameters:
+  pContributors:
+    Type: CommaDelimitedList
+    Description: List of contributors for whom S3 buckets will be created
+  
+  pEnvironment:
+    Type: String
+    Description: Current environment being deployed to
+  
+  pBucketNamePrefix:
+    Type: String
+    Default: "cfpdx"
+    Description: Prefix for S3 bucket names
+  
+  pAuthorizer:
+    Type: String
+    Description: Name of the Admin who ran this template
+
+Transform: Count
+Resources:
+  ContributorBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${pBucketNamePrefix}-${pEnvironment}-%s-${AWS::AccountId}-${AWS::Region}"
+      Count: !Ref pContributors
+
+  Contributors:
+    Type: 'AWS::S3::Object'
+    Properties:
+      Bucket: !Ref ContributorBucket
+      # Metadata for bucket. Additional info to include later
+      Key: 'contributor/%d/%d.txt'
+      ContentType: text/plain
+      Source: !Sub "Contrib Access granted for %s by ${pAuthorizer}"
+      Count: !Ref pContributors
