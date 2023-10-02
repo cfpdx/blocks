@@ -1,0 +1,19 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: "Count macro An iterator for creating multiple resources\n"
+Resources:
+  Macro:
+    Type: AWS::CloudFormation::Macro
+    Properties:
+      Name: Count
+      FunctionName:
+        Fn::GetAtt:
+        - CountMacroFunction
+        - Arn
+  CountMacroFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://cfpdx-count-macro-artifacts/3a446a401f81f33892ae6dcb525c366d
+      Handler: index.handler
+      Runtime: python3.9
+      Timeout: 5
