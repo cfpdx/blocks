@@ -1,6 +1,6 @@
 #!/bin/bash
 
-MACRO_NAME=Count-Macro-v2
+MACRO_NAME=Count-Macro
 COUNT_ARTIFACT_BUCKET=cfpdx-count-macro-artifacts
 
 aws cloudformation package \
@@ -11,4 +11,5 @@ aws cloudformation package \
 aws cloudformation deploy \
     --stack-name ${MACRO_NAME} \
     --template-file packaged.yaml \
-    --capabilities CAPABILITY_IAM
+    --capabilities CAPABILITY_IAM \
+    --region us-east-1

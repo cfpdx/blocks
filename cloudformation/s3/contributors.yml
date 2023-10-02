@@ -17,22 +17,22 @@ Parameters:
   
   pAuthorizer:
     Type: String
-    Description: Name of the Admin who ran this template
+    Description: IAM name of the Admin who ran this template
+
 
 Transform: Count
 Resources:
-  ContributorBucket:
+  ContributorBuckets:
     Type: AWS::S3::Bucket
+    Count: !Ref pContributors
     Properties:
       BucketName: !Sub "${pBucketNamePrefix}-${pEnvironment}-%s-${AWS::AccountId}-${AWS::Region}"
-      Count: !Ref pContributors
-
-  Contributors:
-    Type: 'AWS::S3::Object'
-    Properties:
-      Bucket: !Ref ContributorBucket
-      # Metadata for bucket. Additional info to include later
-      Key: 'contributor/%d/%d.txt'
-      ContentType: text/plain
-      Source: !Sub "Contrib Access granted for %s by ${pAuthorizer}"
-      Count: !Ref pContributors
+      Tags:
+        - Key: authorized_by
+          Value: !Ref pAuthorizer
+        - Key: created_on
+          Value:
+            'Fn::Transform':
+              - Name: DatetimeNow
+                Parameters:
+                  format: '%Y-%m-%dT%H:%M:%SZ'

@@ -14,7 +14,7 @@ Resources:
         \ = datetime.datetime.now().strftime(format)\n    except Exception as e:\n\
         \        response['status'] = 'failure'\n        response['errorMessage']\
         \ = str(e)\n    return response\n"
-      CodeUri: s3://cfpdx-cf-dt-macro/521ca58d78f8673343ec2988c308d305
+      CodeUri: s3://cfpdx-dt-macro-artifacts/39a2c536b54d1bdeac000b5c1ea3a6ba
   Transform:
     Type: AWS::CloudFormation::Macro
     Properties:

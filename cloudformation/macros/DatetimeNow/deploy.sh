@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DATETIME_ARTIFACT_BUCKET=cfpdx-dt-macro-artifacts
-MACRO_NAME=$(basename $(pwd))
+MACRO_NAME=DateTimeNow-Macro
 
 aws cloudformation package \
     --template-file datetimenow.yaml \
@@ -9,7 +9,7 @@ aws cloudformation package \
     --output-template-file packaged.yaml
 
 aws cloudformation deploy \
-    --stack-name ${MACRO_NAME}-macro-east \
+    --stack-name ${MACRO_NAME} \
     --template-file packaged.yaml \
-    --capabilities CAPABILITY_IAM
-
+    --capabilities CAPABILITY_IAM \
+    --region us-east-1
