@@ -15,6 +15,8 @@ printf '<html><body>' > /var/www/html/index.html
 printf '<h1>This site is currently under maintenance</h1>' >> /var/www/html/index.html
 printf '<h2>We apologize for any inconvenience.</h2>' >> /var/www/html/index.html
 printf '<a target="_blank" rel="noopener noreferrer" href="https://www.linkedin.com/in/trevor-johnson12/">Contact Administrator</a>' >> /var/www/html/index.html
+printf '<h3>In the meantime...</h3>' >> /var/www/html/index.html
+printf '<a target="_blank" rel="noopener noreferrer" href="http://spacehunt-983506470569-us-east-1.s3-website-us-east-1.amazonaws.com">SpaceHunt?</a>' >> /var/www/html/index.html
 printf '</body></html>' >> /var/www/html/index.html
 sudo systemctl restart nginx
 EOF
