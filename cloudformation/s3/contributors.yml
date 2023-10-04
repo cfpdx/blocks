@@ -30,6 +30,8 @@ Resources:
       Tags:
         - Key: authorized_by
           Value: !Ref pAuthorizer
+        - Key: managed_by
+          Value: cloudformation
         - Key: created_on
           Value:
             'Fn::Transform':

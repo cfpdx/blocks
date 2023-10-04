@@ -1,0 +1,20 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create S3 Buckets to deploy static "SpaceHunt" site
+
+Resources:
+  SpaceHuntBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "spacehunt-${AWS::AccountId}-${AWS::Region}"
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+      Tags:
+        - Key: managed_by
+          Value: cloudformation
+        - Key: created_on
+          Value:
+            'Fn::Transform':
+              - Name: DatetimeNow
+                Parameters:
+                  format: '%Y-%m-%dT%H:%M:%SZ'
