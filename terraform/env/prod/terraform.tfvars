@@ -9,5 +9,8 @@ api_subdomain = "api.codefriendspdx.com"
 vpc_name = "blocks-vpc"
 vpc_cidr = "10.0.0.0/16"
 
+## APIGW
+apigw_name = "cfpdx-apigw"
+
 ## APPLICATION
 application_prefix = "cfpdx"

@@ -27,3 +27,8 @@ variable "api_source_arn" {
   description = "The source ARN of the API Gateway invoking the lambda"
   type = string
 }
+
+variable "iam_policies" {
+  description = "Iam policies to attach to the lambda role"
+  type = map(string)
+}
