@@ -24,6 +24,12 @@ variable "vpc_cidr" {
   type        = string
 }
 
+## APIGW
+variable "apigw_name" {
+  description = "The name of the api gateway serving codefriendspdx.com"
+  type = string  
+}
+
 ## APPLICATION
 variable "application_prefix" {
   description = "Prefix for individual application. Helps connect specific resources to applications that use them"

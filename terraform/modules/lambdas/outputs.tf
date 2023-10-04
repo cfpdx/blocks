@@ -27,15 +27,15 @@ output "lambda_function_source_code_size" {
 # IAM Role
 output "lambda_role_arn" {
   description = "The ARN of the IAM role created for the Lambda Function"
-  value       = aws_iam_role.lambda_role.arn
+  value       = aws_iam_role.execution_role.arn
 }
 
 output "lambda_role_name" {
   description = "The name of the IAM role created for the Lambda Function"
-  value       = aws_iam_role.lambda_role.name
+  value       = aws_iam_role.execution_role.name
 }
 
 output "lambda_role_unique_id" {
   description = "The unique id of the IAM role created for the Lambda Function"
-  value       = aws_iam_role.lambda_role.unique_id
+  value       = aws_iam_role.execution_role.unique_id
 }

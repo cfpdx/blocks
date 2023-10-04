@@ -1,7 +1,7 @@
 resource "aws_lambda_function" "this" {
   function_name                      = var.function_name
   description                        = var.description
-  role                               = aws_iam_role.lambda_role.arn
+  role                               = aws_iam_role.execution_role.arn
   handler                            = var.handler
   runtime = var.runtime
   filename                  = var.filename
@@ -15,8 +15,8 @@ resource "aws_lambda_permission" "apigw_invoke" {
   source_arn = "${var.api_source_arn}/*"
 }
 
-resource "aws_iam_role" "lambda_role" {
-  name = "lambda-execution-role"
+resource "aws_iam_role" "execution_role" {
+  name = "${var.function_name}-execution-role"
 
   assume_role_policy = <<EOF
 {
@@ -34,27 +34,8 @@ resource "aws_iam_role" "lambda_role" {
 EOF
 }
 
-resource "aws_iam_policy" "lambda_policy" {
-  name        = "lambda-basic-policy"
-  description = "Basic policy for Lambda execution"
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ],
-        Effect   = "Allow",
-        Resource = "arn:aws:logs:*:*:*"
-      }
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_policy_attachment" {
-  policy_arn = aws_iam_policy.lambda_policy.arn
-  role       = aws_iam_role.lambda_role.name
+resource "aws_iam_role_policy_attachment" "policy_attachment" {
+  for_each = var.iam_policies
+  policy_arn = each.value
+  role       = aws_iam_role.execution_role.name
 }

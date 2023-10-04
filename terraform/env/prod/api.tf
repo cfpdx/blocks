@@ -9,7 +9,7 @@ locals {
 module "api_gateway" {
   source = "../../modules/apigateway"
 
-  name          = "hello-http-api"
+  name          = var.apigw_name
   description   = "HTTP API Gateway for ${local.domain_name}"
   protocol_type = "HTTP"
 
@@ -30,24 +30,23 @@ module "api_gateway" {
 
   integrations = {
     "$default" = {
-      lambda_arn             = module.hello_world.lambda_function_arn
+      lambda_arn             = module.apigw_health.lambda_function_arn
       payload_format_version = "2.0"
+      throttling_rate_limit    = 80
+      throttling_burst_limit   = 40
       timeout_milliseconds   = 12000
     }
+
+    # "GET /get-s3" = {
+    #   lambda_arn             = module.contrib_s3_get.lambda_function_arn
+    #   payload_format_version = "2.0"
+    #   throttling_rate_limit    = 80
+    #   throttling_burst_limit   = 40
+    #   timeout_milliseconds   = 12000
+    # }
   }
 
   tags = {
     Name = "${var.application_prefix}-apigw"
   }
-}
-
-module "hello_world" {
-  source = "../../modules/lambdas"
-
-  function_name = "hello-lamdba"
-  description = "Returns a 200 hello world packet"
-  handler       = "helloworld.handler"
-  runtime       = "nodejs16.x"
-  api_source_arn = module.api_gateway.apigatewayv2_api_execution_arn
-  filename = "../../modules/lambdas/definitions/helloworld.js.zip"
 }
