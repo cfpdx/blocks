@@ -73,31 +73,103 @@ resource "aws_security_group" "allow_alb" {
   }
 }
 
+## ASG
+resource "aws_launch_template" "web_asg_template" {
+  name_prefix = var.application_prefix
 
-resource "aws_instance" "web" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.micro"
-  subnet_id                   = data.aws_subnet.primary_public.id
-  vpc_security_group_ids      = [aws_security_group.allow_alb.id]
-  key_name                    = "backdoor_web"
-  associate_public_ip_address = true
+  block_device_mappings {
+    device_name = "/dev/sda1"
+    ebs {
+      volume_size = 30
+    }
+  }
 
-  user_data = local.maintanence_msg
+  network_interfaces {
+    associate_public_ip_address = true
+    security_groups = [aws_security_group.allow_alb.id]
+  }
 
-  tags = {
-    Name = "Web 1"
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "${var.application_prefix}-web-instance"
+    }
+  }
+
+  image_id = data.aws_ami.ubuntu.id
+  instance_type = "t2.micro"       # Change to your desired instance type
+  key_name = "backdoor_web"
+  user_data = base64encode(local.maintanence_msg)
+}
+
+resource "aws_autoscaling_group" "web_asg" {
+  name          = "${var.application_prefix}-web-asg"
+
+  launch_template {
+    id = aws_launch_template.web_asg_template.id
+    version = "$Latest"
+  }
+
+  vpc_zone_identifier = [data.aws_subnet.primary_public.id]
+  min_size            = 1
+  max_size            = 3
+  desired_capacity    = 1
+  
+  target_group_arns = module.alb.target_group_arns
+}
+
+resource "aws_cloudwatch_metric_alarm" "cpu_utilization_high" {
+  alarm_name          = "web-cpu-utilization-high"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods = 2
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 80
+
+  alarm_description = "Scale up the Auto Scaling Group when CPU utilization is high"
+  alarm_actions    = [aws_autoscaling_policy.web_asg_scale_up_policy.arn]
+
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.web_asg.name
   }
 }
 
-resource "aws_instance" "web2" {
-  ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "t2.micro"
-  subnet_id                   = data.aws_subnet.primary_public.id
-  vpc_security_group_ids      = [aws_security_group.allow_alb.id]
-  key_name                    = "backdoor_web"
-  associate_public_ip_address = true
-  user_data = local.maintanence_msg
-  tags = {
-    Name = "Web 2"
+resource "aws_cloudwatch_metric_alarm" "cpu_utilization_low" {
+  alarm_name          = "web-cpu-utilization-low"
+  comparison_operator = "LessThanOrEqualToThreshold"
+  evaluation_periods = 2
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 30
+
+  alarm_description = "Scale down the Auto Scaling Group when CPU utilization is low"
+  alarm_actions    = [aws_autoscaling_policy.web_asg_scale_down_policy.arn]
+
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.web_asg.name
   }
+}
+
+resource "aws_autoscaling_policy" "web_asg_scale_up_policy" {
+  name                   = "scale-up-policy"
+  policy_type            = "SimpleScaling"
+  autoscaling_group_name = aws_autoscaling_group.web_asg.name
+
+  adjustment_type = "ChangeInCapacity"
+  scaling_adjustment = 1
+  cooldown = 300
+}
+
+resource "aws_autoscaling_policy" "web_asg_scale_down_policy" {
+  name                   = "scale-down-policy"
+  policy_type            = "SimpleScaling"
+  autoscaling_group_name = aws_autoscaling_group.web_asg.name
+
+  adjustment_type = "ChangeInCapacity"
+  scaling_adjustment = -1
+  cooldown = 300
 }
