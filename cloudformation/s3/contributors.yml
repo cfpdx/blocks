@@ -2,34 +2,21 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Create S3 Buckets for Contributor portfolio information
 
 Parameters:
-  pContributors:
-    Type: CommaDelimitedList
-    Description: List of contributors for whom S3 buckets will be created
-  
-  pEnvironment:
+  pBucketName:
     Type: String
-    Description: Current environment being deployed to
-  
-  pBucketNamePrefix:
-    Type: String
-    Default: "cfpdx"
-    Description: Prefix for S3 bucket names
-  
-  pAuthorizer:
-    Type: String
-    Description: IAM name of the Admin who ran this template
+    Description: Name of bucket to hold contributor static content
 
-
-Transform: Count
 Resources:
-  ContributorBuckets:
+  ContributorBucket:
     Type: AWS::S3::Bucket
-    Count: !Ref pContributors
     Properties:
-      BucketName: !Sub "${pBucketNamePrefix}-${pEnvironment}-%s-${AWS::AccountId}-${AWS::Region}"
+      BucketName: !Ref pBucketName
+      PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
       Tags:
-        - Key: authorized_by
-          Value: !Ref pAuthorizer
         - Key: managed_by
           Value: cloudformation
         - Key: created_on
@@ -38,3 +25,25 @@ Resources:
               - Name: DatetimeNow
                 Parameters:
                   format: '%Y-%m-%dT%H:%M:%SZ'
+
+  ContributorBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref ContributorBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: PublicReadForContribBucket
+            Effect: Allow
+            Principal: '*'
+            Action:
+              - s3:GetObject
+            Resource:
+              - !Sub arn:aws:s3:::${ContributorBucket}/*
+
+Outputs:
+  ContributorBucket:
+    Description: S3 bucket for first contributor
+    Value: !Ref ContributorBucket
+    Export:
+      Name: ContributorBucket
