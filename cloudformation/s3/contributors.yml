@@ -16,6 +16,17 @@ Resources:
           BlockPublicPolicy: false
           IgnorePublicAcls: false
           RestrictPublicBuckets: false
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - "https://codefriendspdx.com"
+            AllowedMethods:
+              - GET
+              - HEAD
+              - POST
+            AllowedHeaders:
+              - "*"
+            MaxAge: 3000
       Tags:
         - Key: managed_by
           Value: cloudformation
