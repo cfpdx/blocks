@@ -13,6 +13,10 @@ variable "api_subdomain" {
   description = "The name of the DNS subdomain name registered to the api gw"
 }
 
+variable "assets_subdomain" {
+  description = "The name of the DNS subdomain name registered to the cloudfront distro"
+}
+
 ## VPC
 variable "vpc_name" {
   description = "The name of the primary vpc"
@@ -28,4 +32,10 @@ variable "vpc_cidr" {
 variable "application_prefix" {
   description = "Prefix for individual application. Helps connect specific resources to applications that use them"
   type        = string
+}
+
+## CLOUDFRONT
+variable "assets_cloudfront_endpoint" {
+  description = "The name of the subdomain name registered to site assets CF distro"
+  type = string
 }

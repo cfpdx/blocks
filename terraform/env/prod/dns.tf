@@ -30,6 +30,14 @@ module "web_records" {
         name    = module.api_gateway.apigatewayv2_api_api_endpoint
         zone_id = module.api_gateway.apigatewayv2_domain_name_hosted_zone_id
       }
+    },
+    {
+      name = "assets.${var.registered_domain}"
+      type = "A"
+      alias = {
+        name    = var.assets_cloudfront_endpoint
+        zone_id = module.api_gateway.apigatewayv2_domain_name_hosted_zone_id
+      }
     }
   ]
 }
