@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create CloudFront distro to serve site public assets at edge
+
+Parameters:
+  pS3OriginDomain:
+    Type: String
+    Description: Domain of origin bucket storing contributor static content
+
+Resources:
+  WebPublicAssets:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: 'true'
+        Origins:
+        - DomainName: !Ref pS3OriginDomain
+          Id: webS3Origin
+          S3OriginConfig:
+            OriginAccessIdentity: !Join ['', ['origin-access-identity/cloudfront/', !Ref WebAssetsOAI]]
+        DefaultCacheBehavior:
+          AllowedMethods:
+          - DELETE
+          - GET
+          - HEAD
+          - OPTIONS
+          - PATCH
+          - POST
+          - PUT
+          TargetOriginId: webS3Origin
+          ViewerProtocolPolicy: allow-all
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+        PriceClass: PriceClass_100
+        ViewerCertificate:
+          CloudFrontDefaultCertificate: 'true'
+      Tags:
+        - Key: managed_by
+          Value: cloudformation
+        - Key: created_on
+          Value:
+            'Fn::Transform':
+              - Name: DatetimeNow
+                Parameters:
+                  format: '%Y-%m-%dT%H:%M:%SZ'
+
+  WebAssetsOAI:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: Web public assets distro OAI

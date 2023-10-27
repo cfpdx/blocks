@@ -11,22 +11,6 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref pBucketName
-      PublicAccessBlockConfiguration:
-          BlockPublicAcls: false
-          BlockPublicPolicy: false
-          IgnorePublicAcls: false
-          RestrictPublicBuckets: false
-      CorsConfiguration:
-        CorsRules:
-          - AllowedOrigins:
-              - "https://codefriendspdx.com"
-            AllowedMethods:
-              - GET
-              - HEAD
-              - POST
-            AllowedHeaders:
-              - "*"
-            MaxAge: 3000
       Tags:
         - Key: managed_by
           Value: cloudformation
@@ -37,20 +21,6 @@ Resources:
                 Parameters:
                   format: '%Y-%m-%dT%H:%M:%SZ'
 
-  ContributorBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref ContributorBucket
-      PolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Sid: PublicReadForContribBucket
-            Effect: Allow
-            Principal: '*'
-            Action:
-              - s3:GetObject
-            Resource:
-              - !Sub arn:aws:s3:::${ContributorBucket}/*
 
 Outputs:
   ContributorBucket:
