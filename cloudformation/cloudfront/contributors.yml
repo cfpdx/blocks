@@ -49,3 +49,11 @@ Resources:
     Properties:
       CloudFrontOriginAccessIdentityConfig:
         Comment: Web public assets distro OAI
+  
+  WebAssetsEndpointStore:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: Secure endpoint to store distro name to pass to terraform later
+      Name: webAssetsEndpoint
+      Type: String
+      Value: !GetAtt WebPublicAssets.DomainName
