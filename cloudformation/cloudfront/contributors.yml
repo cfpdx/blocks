@@ -5,6 +5,10 @@ Parameters:
   pS3OriginDomain:
     Type: String
     Description: Domain of origin bucket storing contributor static content
+  
+  pAssetSubdomain:
+    Type: String
+    Description: Name of the subdomain to associate as an alias to this distro
 
 Resources:
   WebPublicAssets:
@@ -17,15 +21,12 @@ Resources:
           Id: webS3Origin
           S3OriginConfig:
             OriginAccessIdentity: !Join ['', ['origin-access-identity/cloudfront/', !Ref WebAssetsOAI]]
+        Aliases:
+          - !Ref pAssetSubdomain
         DefaultCacheBehavior:
           AllowedMethods:
-          - DELETE
           - GET
           - HEAD
-          - OPTIONS
-          - PATCH
-          - POST
-          - PUT
           TargetOriginId: webS3Origin
           ViewerProtocolPolicy: allow-all
           ForwardedValues:
@@ -33,8 +34,6 @@ Resources:
             Cookies:
               Forward: none
         PriceClass: PriceClass_100
-        ViewerCertificate:
-          CloudFrontDefaultCertificate: 'true'
       Tags:
         - Key: managed_by
           Value: cloudformation
