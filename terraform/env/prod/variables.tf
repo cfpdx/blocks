@@ -33,9 +33,3 @@ variable "application_prefix" {
   description = "Prefix for individual application. Helps connect specific resources to applications that use them"
   type        = string
 }
-
-## CLOUDFRONT
-variable "assets_cloudfront_endpoint" {
-  description = "The name of the subdomain name registered to site assets CF distro"
-  type = string
-}
