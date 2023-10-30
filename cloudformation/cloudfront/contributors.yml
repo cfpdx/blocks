@@ -9,6 +9,10 @@ Parameters:
   pAssetSubdomain:
     Type: String
     Description: Name of the subdomain to associate as an alias to this distro
+  
+  pHostedZoneId:
+    Type: String
+    Description: Hosted zone to create the alias in
 
 Resources:
   WebPublicAssets:
@@ -21,8 +25,6 @@ Resources:
           Id: webS3Origin
           S3OriginConfig:
             OriginAccessIdentity: !Join ['', ['origin-access-identity/cloudfront/', !Ref WebAssetsOAI]]
-        Aliases:
-          - !Ref pAssetSubdomain
         DefaultCacheBehavior:
           AllowedMethods:
           - GET
@@ -34,6 +36,11 @@ Resources:
             Cookies:
               Forward: none
         PriceClass: PriceClass_100
+        ViewerCertificate:
+          AcmCertificateArn: !Ref WebAssetsCert
+          SslSupportMethod: sni-only
+        Aliases:
+          - !Ref pAssetSubdomain
       Tags:
         - Key: managed_by
           Value: cloudformation
@@ -50,10 +57,19 @@ Resources:
       CloudFrontOriginAccessIdentityConfig:
         Comment: Web public assets distro OAI
   
+  WebAssetsCert:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref pAssetSubdomain
+      DomainValidationOptions:
+            - DomainName: !Ref pAssetSubdomain
+              HostedZoneId: !Ref pHostedZoneId
+      ValidationMethod: DNS
+  
   WebAssetsEndpointStore:
     Type: AWS::SSM::Parameter
     Properties:
-      Description: Secure endpoint to store distro name to pass to terraform later
+      Description: Secure place to store distro name to pass to terraform later (no private endpoints in source control)
       Name: webAssetsEndpoint
       Type: String
       Value: !GetAtt WebPublicAssets.DomainName
