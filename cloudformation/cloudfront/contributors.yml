@@ -20,6 +20,7 @@ Resources:
     Properties:
       DistributionConfig:
         Enabled: 'true'
+        IPV6Enabled: false
         Origins:
         - DomainName: !Ref pS3OriginDomain
           Id: webS3Origin
