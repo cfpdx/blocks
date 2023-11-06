@@ -7,10 +7,17 @@ variable "default_region" {
 ## DNS
 variable "registered_domain" {
   description = "The name of the DNS name registered to this project"
+  type        = string
 }
 
 variable "api_subdomain" {
   description = "The name of the DNS subdomain name registered to the api gw"
+  type        = string
+}
+
+variable "assets_subdomain" {
+  description = "The name of the DNS subdomain name registered to the cloudfront distro"
+  type        = string
 }
 
 ## VPC

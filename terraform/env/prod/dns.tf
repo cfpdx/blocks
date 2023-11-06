@@ -24,7 +24,7 @@ module "web_records" {
       }
     },
     {
-      name = "api.${var.registered_domain}"
+      name = var.api_subdomain
       type = "A"
       alias = {
         name    = module.api_gateway.apigatewayv2_api_api_endpoint
