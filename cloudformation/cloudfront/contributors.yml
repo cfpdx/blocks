@@ -2,9 +2,13 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: Create CloudFront distro to serve site public assets at edge
 
 Parameters:
-  pS3OriginDomain:
+  pContribS3OriginDomain:
     Type: String
     Description: Domain of origin bucket storing contributor static content
+  
+  pContentS3OriginDomain:
+    Type: String
+    Description: Domain of origin bucket storing site public content
   
   pAssetSubdomain:
     Type: String
@@ -22,20 +26,33 @@ Resources:
         Enabled: 'true'
         IPV6Enabled: false
         Origins:
-        - DomainName: !Ref pS3OriginDomain
-          Id: webS3Origin
+        - DomainName: !Ref pContentS3OriginDomain
+          Id: WebS3Origin
           S3OriginConfig:
             OriginAccessIdentity: !Join ['', ['origin-access-identity/cloudfront/', !Ref WebAssetsOAI]]
+        - DomainName: !Ref pContribS3OriginDomain
+          Id: ContribS3Origin
+          OriginPath: /contributors
+          S3OriginConfig:
+            OriginAccessIdentity: !Join ['', ['origin-access-identity/cloudfront/', !Ref ContribAssetsOAI]]
         DefaultCacheBehavior:
           AllowedMethods:
           - GET
           - HEAD
-          TargetOriginId: webS3Origin
-          ViewerProtocolPolicy: allow-all
+          TargetOriginId: WebS3Origin
+          ViewerProtocolPolicy: redirect-to-https
           ForwardedValues:
-            QueryString: false
-            Cookies:
-              Forward: none
+            QueryString: true
+        CacheBehaviors:
+         -
+            AllowedMethods:
+              - GET
+              - HEAD
+            PathPattern: /contributors/*
+            TargetOriginId: ContribS3Origin
+            ViewerProtocolPolicy: redirect-to-https
+            ForwardedValues:
+              QueryString: true
         PriceClass: PriceClass_100
         ViewerCertificate:
           AcmCertificateArn: !Ref WebAssetsCert
@@ -52,6 +69,12 @@ Resources:
                 Parameters:
                   format: '%Y-%m-%dT%H:%M:%SZ'
 
+  ContribAssetsOAI:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: Contributor assets distro OAI
+  
   WebAssetsOAI:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
     Properties:

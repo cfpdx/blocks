@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Create S3 Buckets for Contributor portfolio information
+Description: Create S3 Buckets for site public content
 
 Parameters:
   pBucketName:
@@ -7,7 +7,7 @@ Parameters:
     Description: Name of bucket to hold contributor static content
 
 Resources:
-  ContributorBucket:
+  ContentBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref pBucketName
@@ -22,8 +22,8 @@ Resources:
                   format: '%Y-%m-%dT%H:%M:%SZ'
 
 Outputs:
-  ContributorBucket:
+  ContentBucket:
     Description: S3 bucket for first contributor
-    Value: !Ref ContributorBucket
+    Value: !Ref ContentBucket
     Export:
-      Name: ContributorBucket
+      Name: ContentBucket
