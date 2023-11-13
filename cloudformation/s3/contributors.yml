@@ -5,12 +5,29 @@ Parameters:
   pBucketName:
     Type: String
     Description: Name of bucket to hold contributor static content
+  
+  pCloudFrontDomain:
+    Type: String
+    Description: Domain name of the CloudFront distribution serving S3 contents
 
 Resources:
   ContributorBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref pBucketName
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+              - PUT
+              - POST
+            AllowedOrigins:
+              - "https://codefriendspdx.com"
+              - "https://*.codefriendspdx.com"
+              - !Ref pCloudFrontDomain
+            MaxAge: 3000
       Tags:
         - Key: managed_by
           Value: cloudformation

@@ -43,6 +43,8 @@ Resources:
           ViewerProtocolPolicy: redirect-to-https
           ForwardedValues:
             QueryString: true
+            Headers:
+              - Origin
         CacheBehaviors:
          -
             AllowedMethods:
@@ -53,6 +55,8 @@ Resources:
             ViewerProtocolPolicy: redirect-to-https
             ForwardedValues:
               QueryString: true
+              Headers:
+              - Origin
         PriceClass: PriceClass_100
         ViewerCertificate:
           AcmCertificateArn: !Ref WebAssetsCert
