@@ -5,6 +5,10 @@ Parameters:
   pBucketName:
     Type: String
     Description: Name of bucket to hold contributor static content
+    
+  pCloudFrontDomain:
+    Type: String
+    Description: Domain name of the CloudFront distribution serving S3 contents
 
 Resources:
   ContentBucket:
