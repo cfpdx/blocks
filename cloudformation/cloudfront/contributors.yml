@@ -32,7 +32,6 @@ Resources:
             OriginAccessIdentity: !Join ['', ['origin-access-identity/cloudfront/', !Ref WebAssetsOAI]]
         - DomainName: !Ref pContribS3OriginDomain
           Id: ContribS3Origin
-          OriginPath: /contributors
           S3OriginConfig:
             OriginAccessIdentity: !Join ['', ['origin-access-identity/cloudfront/', !Ref ContribAssetsOAI]]
         DefaultCacheBehavior:
