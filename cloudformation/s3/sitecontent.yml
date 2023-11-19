@@ -11,6 +11,17 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref pBucketName
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+              - PUT
+              - POST
+            AllowedOrigins:
+              - "*"
+            MaxAge: 3000
       Tags:
         - Key: managed_by
           Value: cloudformation

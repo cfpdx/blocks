@@ -32,7 +32,6 @@ Resources:
             OriginAccessIdentity: !Join ['', ['origin-access-identity/cloudfront/', !Ref WebAssetsOAI]]
         - DomainName: !Ref pContribS3OriginDomain
           Id: ContribS3Origin
-          OriginPath: /contributors
           S3OriginConfig:
             OriginAccessIdentity: !Join ['', ['origin-access-identity/cloudfront/', !Ref ContribAssetsOAI]]
         DefaultCacheBehavior:
@@ -43,6 +42,8 @@ Resources:
           ViewerProtocolPolicy: redirect-to-https
           ForwardedValues:
             QueryString: true
+            Headers:
+              - Origin
         CacheBehaviors:
          -
             AllowedMethods:
@@ -53,6 +54,8 @@ Resources:
             ViewerProtocolPolicy: redirect-to-https
             ForwardedValues:
               QueryString: true
+              Headers:
+              - Origin
         PriceClass: PriceClass_100
         ViewerCertificate:
           AcmCertificateArn: !Ref WebAssetsCert

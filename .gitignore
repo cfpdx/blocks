@@ -1,3 +1,4 @@
 .envrc
 .terraform
 backend.tf
+*.log
