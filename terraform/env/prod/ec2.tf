@@ -114,7 +114,7 @@ resource "aws_autoscaling_group" "web_asg" {
   vpc_zone_identifier = [data.aws_subnet.primary_public.id]
   min_size            = 1
   max_size            = 3
-  desired_capacity    = 2
+  desired_capacity    = 1
   
   target_group_arns = module.alb.target_group_arns
 }
