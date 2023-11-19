@@ -22,12 +22,14 @@ sudo systemctl restart nginx
 EOF
 }
 
-data "aws_ami" "ubuntu" {
+data "aws_caller_identity" "current" {}
+
+data "aws_ami" "cfpdx_web" {
   most_recent = true
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"]
+    values = ["cfpdx-web"]
   }
 
   filter {
@@ -35,7 +37,7 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  owners = [data.aws_caller_identity.current.account_id]
 }
 
 data "aws_subnet" "primary_public" {
@@ -75,7 +77,7 @@ resource "aws_security_group" "allow_alb" {
 
 ## ASG
 resource "aws_launch_template" "web_asg_template" {
-  name_prefix = var.application_prefix
+  name = "cfpdx-web-template"
 
   block_device_mappings {
     device_name = "/dev/sda1"
@@ -96,10 +98,9 @@ resource "aws_launch_template" "web_asg_template" {
     }
   }
 
-  image_id = data.aws_ami.ubuntu.id
+  image_id = data.aws_ami.cfpdx_web.id
   instance_type = "t2.micro"       # Change to your desired instance type
   key_name = "backdoor_web"
-  user_data = base64encode(local.maintanence_msg)
 }
 
 resource "aws_autoscaling_group" "web_asg" {
@@ -113,7 +114,7 @@ resource "aws_autoscaling_group" "web_asg" {
   vpc_zone_identifier = [data.aws_subnet.primary_public.id]
   min_size            = 1
   max_size            = 3
-  desired_capacity    = 1
+  desired_capacity    = 2
   
   target_group_arns = module.alb.target_group_arns
 }
